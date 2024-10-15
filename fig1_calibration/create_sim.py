@@ -21,6 +21,10 @@ age_data_file  = f'{inputs}/20200614chop5_KingCounty_AgeHist.csv'
 safegraph_file = f'{inputs}/KC_weeklyinteractions_20200811_trim.csv'
 popfile_stem   = f'{inputs}/kc_rnr_seed'
 
+# also use prevalence data
+
+
+
 
 # Generate the population filename
 def get_popfile(pars):
@@ -195,7 +199,7 @@ def create_sim(pars=None, use_safegraph=True, label=None, show_intervs=False):
     return sim
 
 
-def run_sim(pars=None, interactive=False, sim=None, use_safegraph=True, do_plot=True): # Difference
+def run_sim(pars=None, interactive=False, sim=None, use_safegraph=True, do_plot=True,return_timeseries = False): # Difference
     ''' Create and run a simulation from a given set of parameters '''
 
     # Create and run the sim
@@ -219,7 +223,10 @@ def run_sim(pars=None, interactive=False, sim=None, use_safegraph=True, do_plot=
     def roll(vec):
         rolled = pd.Series(vec).rolling(window=window).mean().to_numpy()
         return rolled[~np.isnan(rolled)]
-
+    
+    def roll2(vec):
+        rolled = pd.Series(vec).rolling(window=window).mean().fillna(0).to_numpy()
+        return rolled
     offset = 0 # Difference between start data for the data and start date for the sim
     window = 7 # A week
     data_roll_diag  = roll(sim.data['new_diagnoses'])
@@ -233,6 +240,40 @@ def run_sim(pars=None, interactive=False, sim=None, use_safegraph=True, do_plot=
     weights = {'cum_diagnoses':ramp_weight, 'cum_deaths':ramp_weight, 'new_diagnoses':0.01, 'new_deaths':0.01}
     fit = sim.compute_fit(custom=custom, keys=['cum_diagnoses', 'cum_deaths', 'new_diagnoses', 'new_deaths'], weights=weights)
 
+    if return_timeseries:
+        scan_file     = f'{inputs}/scanprev_5_21.csv'
+        scan_data          = pd.read_csv(scan_file)
+        scan_data['since'] = pd.to_datetime(scan_data['since'])
+        scan_data['to']    = pd.to_datetime(scan_data['to'])
+        scan_data['date']  = scan_data[['since','to']].mean(axis=1,numeric_only=False)
+        scan_data['infectious'] = scan_data['mean'] * 2.26e6
+        scan_processed = pd.DataFrame(
+            {'date':pd.date_range(start=pd.to_datetime('2020-01-27'),end=pd.to_datetime('2020-06-08'))}
+        ).merge(scan_data[['date','infectious']],on='date',how='left')
+        
+        data_roll_diag  = roll2(sim.data['new_diagnoses'])
+        data_roll_death = roll2(sim.data['new_deaths'])
+        sim_roll_diag   = roll2(sim.results['new_diagnoses'].values[offset:])
+        sim_roll_death  = roll2(sim.results['new_deaths'].values[offset:])
+        sim_roll_infectious = roll2(sim.results['n_infectious'].values[offset:])
+        out = pd.DataFrame(
+            
+            {   # model
+                'diagnoses'     : sim_roll_diag,
+                'death'         : sim_roll_death,
+                'infectious'    : sim_roll_infectious,
+                'cum_diagnoses' : sim.results['cum_diagnoses'].values,
+                'cum_deaths'    : sim.results['cum_deaths'].values,
+                # data
+                'diagnoses_data': data_roll_diag,
+                'death_data'    : data_roll_death,
+                'cum_diagnoses_data': sim.data['cum_diagnoses'].values,
+                'cum_deaths_data'    : sim.data['cum_deaths'].values,
+                'infectious_data'    : scan_processed['infectious'].values
+            }
+        )
+
+        return out
     # Handle output
     if interactive:
         if do_plot:
