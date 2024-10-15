@@ -16,3 +16,4 @@ pyarrow>=16.0.0
 pydoe>=0.3.8
 scikit-optimize>=0.10.1
 rpy2>=3.5.16
+hetgpy
