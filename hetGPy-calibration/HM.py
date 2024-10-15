@@ -53,6 +53,9 @@ class HM:
         self.today           = datetime.today().strftime("%Y-%m-%d")
         self.use_nugs        = True
         self.use_MD          = False
+
+        # new set of designs
+        self.new_pars = None
         
         return
         
@@ -182,6 +185,7 @@ class HM:
         new_pars['rand_seed'] = range(0,len(new_pars))
         new_pars['rand_seed'] += rand_seed_offset
         new_pars.to_csv(f'hm_waves/{self.today}-new_pars_wave{i:03d}.csv',index=False)
+        self.new_pars = new_pars
         return new_pars
 
 
