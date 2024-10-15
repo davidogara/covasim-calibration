@@ -62,11 +62,7 @@ if __name__ == "__main__":
 
     new_designs = history_match.new_pars
     parlist = new_designs.to_dict(orient='records')
-    debug = True
     ncpus = 50
-    if debug:
-        parlist = parlist[0:5]
-        ncpus = 2
     res = sc.parallelize(make_and_run_sim,parlist,ncpus=ncpus)
     df_out = pd.concat(res)
     df_out.to_csv(f'data/sims_{round+1:03d}.csv')
