@@ -1,5 +1,5 @@
 #!/bin/bash
-#BSUB -n 5 
+#BSUB -n 50 
 #BSUB -R "(!gpu)" 
 #BSUB -R "rusage[mem=16GB]"
 #BSUB -W 5:00 
