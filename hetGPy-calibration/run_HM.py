@@ -1,7 +1,9 @@
+import os
+os.environ['MPLCONFIGDIR'] = './cache'
+os.environ['NUMBA_CACHE_DIR'] =  './cache'
 from HM import HM
 import pandas as pd
 import numpy as np
-import os
 import sciris as sc
 import sys
 sys.path.append('../')
