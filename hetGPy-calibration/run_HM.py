@@ -8,6 +8,8 @@ import sciris as sc
 import sys
 sys.path.append('../')
 from fig1_calibration import create_sim as cs
+import argparse
+
 def make_and_run_sim(par_input):
     pars = par_input.copy()
     pars['verbose'] = False
@@ -23,6 +25,15 @@ def make_and_run_sim(par_input):
         df[k] = v
     return df
 
+def parse_args():
+    '''
+    Set round number for analysis.
+    '''
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-r','--round',type=int)
+
+    args = parser.parse_args()
+    return args.round
 
 if __name__ == "__main__":
     run_new_sims = False
@@ -30,7 +41,8 @@ if __name__ == "__main__":
         os.chdir('hetGPy-calibration')
     filename = 'HistoryMatchingDictionary.csv'
     df       = pd.read_csv(filename)
-    round    = 0
+    round    = parse_args()
+    print(f"Running HM round {round}")
     pars = df.query("wave_num==@round").to_dict(orient='records')[0]
     pars['metric'] = "I_M"
     pars['tstride'] = [int(t) for t in pars['tstride'].split(",")]
