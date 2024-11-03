@@ -31,18 +31,22 @@ def parse_args():
     '''
     parser = argparse.ArgumentParser()
     parser.add_argument('-r','--round',type=int)
-
+    parser.add_argument('-n','--new_sims',type=bool)
     args = parser.parse_args()
-    return args.round
+    return args
 
 if __name__ == "__main__":
-    run_new_sims = False
     if not os.getcwd().endswith('calibration'):
         os.chdir('hetGPy-calibration')
     filename = 'HistoryMatchingDictionary.csv'
-    df       = pd.read_csv(filename)
-    round    = parse_args()
+    df       = pd.read_csv(filename)    
+    args    = parse_args()
+    
+    round        = args.round
+    run_new_sims = args.new_sims
     print(f"Running HM round {round}")
+    print(f"Running new sims {run_new_sims}")
+    
     pars = df.query("wave_num==@round").to_dict(orient='records')[0]
     pars['metric'] = "I_M"
     pars['tstride'] = [int(t) for t in pars['tstride'].split(",")]
