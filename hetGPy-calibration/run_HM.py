@@ -28,7 +28,7 @@ if __name__ == "__main__":
     run_new_sims = False
     if not os.getcwd().endswith('calibration'):
         os.chdir('hetGPy-calibration')
-    filename = 'HistoryMatchingDictionary-v2.csv'
+    filename = 'HistoryMatchingDictionary.csv'
     df       = pd.read_csv(filename)
     round    = 0
     pars = df.query("wave_num==@round").to_dict(orient='records')[0]
