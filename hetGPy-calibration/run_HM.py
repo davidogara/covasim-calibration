@@ -25,14 +25,14 @@ def make_and_run_sim(par_input):
 
 
 if __name__ == "__main__":
+    run_new_sims = False
     if not os.getcwd().endswith('calibration'):
         os.chdir('hetGPy-calibration')
     filename = 'HistoryMatchingDictionary-v2.csv'
     df       = pd.read_csv(filename)
     round    = 0
-
     pars = df.query("wave_num==@round").to_dict(orient='records')[0]
-    
+    pars['metric'] = "I_M"
     pars['tstride'] = [int(t) for t in pars['tstride'].split(",")]
     if len(pars['tstride'])==1:
         pars['tstride'] = int(pars['tstride'][0])
@@ -56,13 +56,18 @@ if __name__ == "__main__":
                        outputs        = pars['outputs'],
                        prev_data_file = pars['prev_data_file'],
                        prev_sims      = pars['prev_sims'],
+                       metric         = pars['metric'],
                        sampling_strategy='grid_NI'
                        )
     history_match.run()
 
-    new_designs = history_match.new_pars
-    parlist = new_designs.to_dict(orient='records')
-    ncpus = 50
-    res = sc.parallelize(make_and_run_sim,parlist,ncpus=ncpus)
-    df_out = pd.concat(res)
-    df_out.to_csv(f'data/sims_{round+1:03d}.csv')
+    if run_new_sims:
+        new_designs = history_match.new_pars
+        parlist = new_designs.to_dict(orient='records')
+        ncpus = 50
+        res = sc.parallelize(make_and_run_sim,parlist,ncpus=ncpus)
+        df_out = pd.concat(res)
+        df_out.to_csv(f'data/sims_combined-wave{round+1:03d}.csv')
+        print("Ran new sims.")
+    else:
+        print("No new sims ran.")

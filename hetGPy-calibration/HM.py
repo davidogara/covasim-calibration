@@ -31,6 +31,7 @@ class HM:
                  outputs,
                  prev_data_file,
                  prev_sims,
+                 metric,
                  sampling_strategy=None,
                  covtype = "Matern5_2",
                  DEBUG = False):
@@ -42,6 +43,7 @@ class HM:
         self.prev_data_file  = prev_data_file
         self.sampling_strategy = sampling_strategy
         self.outputs           = outputs
+        self.metric            = metric
         self.prev_sims         = prev_sims
         self.covtype = covtype
 
@@ -50,6 +52,7 @@ class HM:
         self.bounds['tn'][0] = 5.0
         self.keys            = list(self.bounds.keys())
         self.DEBUG           = DEBUG
+        # to preserve analyses with unique name (no longer used)
         self.today           = datetime.today().strftime("%Y-%m-%d")
         self.use_nugs        = True
         self.use_MD          = False
@@ -172,7 +175,7 @@ class HM:
         
         '''
         df_NI_rescaled = self.rescale(df_NI,bounds=bounds)
-        df_NI_rescaled.to_csv(f'hm_waves/{self.today}-NI_pars_wave{i:03d}.csv',index=False)
+        df_NI_rescaled.to_csv(f'hm_waves/NI_pars_wave{i:03d}.csv',index=False)
         
         # maximin design of NI space
         sample = sample_NI_maximin(df_NI_rescaled[self.keys],n=n,seed=self.i)
@@ -184,7 +187,7 @@ class HM:
         new_pars = new_pars_NI.copy()
         new_pars['rand_seed'] = range(0,len(new_pars))
         new_pars['rand_seed'] += rand_seed_offset
-        new_pars.to_csv(f'hm_waves/{self.today}-new_pars_wave{i:03d}.csv',index=False)
+        new_pars.to_csv(f'hm_waves/new_pars_wave{i:03d}.csv',index=False)
         self.new_pars = new_pars
         return new_pars
 
@@ -280,12 +283,21 @@ class HM:
         
         '''
         if self.prev_data_file is None:
-            last_round_NI_path = f"hm_waves/{self.today}-NI_pars_wave{i-1:03d}.csv"
+            last_round_NI_path = f"hm_waves/NI_pars_wave{i-1:03d}.csv"
         else:
             last_round_NI_path = self.prev_data_file
 
         return last_round_NI_path
-    
+    def columnwise_implausibility_metric(self,preds, outputs):
+        '''
+        Filter dataset based on implausibility metric
+        '''
+        sorted_vals = np.sort(preds[outputs],axis=1)
+        preds['I_M'] = sorted_vals[:,-1]
+        preds['I_2M'] = sorted_vals[:,-2]
+        preds['I_3M'] = sorted_vals[:,-3]
+        return preds
+
     def eval_univariate_emulator(self,models,tvec,bounds,rand_seed_offset,i,data):
         '''
         Evaluate emulator models on NROY space
@@ -331,14 +343,12 @@ class HM:
         df_NI_full = df_preds[self.keys].copy()
         for key in NI_preds.keys():
             df_NI_full[key] = NI_preds[key]
-        df_NI_full.to_csv(f'hm_waves/{self.today}-predictions-with-implausibility-wave{self.i:03d}.csv')
+        df_NI_full = self.columnwise_implausibility_metric(preds=df_NI_full,outputs=list(NI_preds.keys()))
+        df_NI_full.to_csv(f'hm_waves/predictions-with-implausibility-wave{self.i:03d}.csv')
         
         df_NI  = df_NI_full.copy()
-        for key in NI_preds.keys():
-            df_NI = df_NI.loc[df_NI[key]<self.cutoff]
-
-        # check overlap
-        print(f" > Checking join:")
+        print(' > Filtering by Non-Implausibility:')
+        df_NI = df_NI.loc[df_NI[self.metric]<self.cutoff]
         
         print(f" > NI samples: {df_NI.shape[0]}")
         self.make_new_pars(df_NI,
