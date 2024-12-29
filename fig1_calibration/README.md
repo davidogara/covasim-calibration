@@ -1,12 +1,8 @@
-# Fig. 1: Calibration of the model to data from Seattle-King County, Washington, from 27 January to 9 June 2020
+# Utility functions for Figure 1 from Kerr et. al 2021
 
-This folder contains the code for reproducing Fig. 1 of the paper. The files are as follows:
+See the original repository here: https://github.com/amath-idm/controlling-covid19-ttq/tree/main/fig1_calibration
 
-- `plot_fig1.py` -- the script file that generates the figure.
-- `cache_populations.py` -- generates the populations used by `create_sim.py` (both in this and other folders).
-- `create_sim.py` -- configures the simulation for `run_fig1.py` and `run_optimization.py`.
-- `run_optimization.py` -- runs the optimization process calibrating the model to data, for simulations in `run_fig1a.py`.
-- `analyze_optimization.py`-- processes the calibrations and converts the outputs to JSON files with the calibrated parameters.
-- `run_fig1a.py` -- uses the JSON files for the calibrated model to run the simulations.
-- `fig1a.sims` -- the cached simulations (output of `run_fig1a.py`).
+This repository contains a slimmed down version of the repository from Kerr et. al 2021 to facilitate running covasim simulations.
+
+
 
