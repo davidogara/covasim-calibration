@@ -4,18 +4,21 @@ plot_fig5.py to generate the figure.
 
 The simulations take about 5 min to run.
 '''
-
+# for debugging
+import os
+if not os.getcwd().endswith('fig5_projections'):
+    os.chdir('./fig5_projections/')
 import sciris as sc
 import covasim as cv
 import create_sim as cs
 
 # Run configuration
-indices    = range(5) # Number of replicates
-ncpus      = min(len(indices), 5)
+indices    = range(50) # Number of replicates
+ncpus      = min(len(indices), 10)
 do_plot    = 0
 do_save    = 1
 from_cache = 1
-msimsfile  = 'fig5.msims'
+msimsfile  = 'fig5-abc.msims'
 T = sc.tic()
 
 # Set base parameters
