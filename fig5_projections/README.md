@@ -1,8 +1,16 @@
-# Fig. 5: Comparison between observed epidemic trends and projected scenarios from 1 June to 31 August 2020 
+# Utility Functions for Policy Plot
 
-This folder contains the code for reproducing Fig. 5 of the paper. The files are as follows:
+This folder contains several functions from the original covasim analysis, see here:
+https://github.com/amath-idm/controlling-covid19-ttq/tree/main/fig5_projections
 
-- `plot_fig5.py` -- the script file that generates the figure.
+
+Specfically, it contains:
+
+New files:
+- `plot_policy.ipynb`: Creates the figure. Note that this relies on `fig5-abc.msims` which is a large file, and is archived via Zenodo.
+
+Original files:
+
 - `create_sim.py` -- configures the simulation for `run_fig5.py`.
 - `run_fig5.py` -- runs the simulations for Fig. 5.
 - `fig5.msims` -- cached simulation results (the output of `run_fig5.py`).
