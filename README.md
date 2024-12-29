@@ -1,8 +1,6 @@
 # Code for "Improving Policy-Oriented Agent-Based Modeling with History Matching: A Case Study"
 
-This repository includes the code for reproducing the results in the manuscript 
-
-
+This repository includes the code for reproducing the results in the above-mentioned manuscript by O'Gara, Kerr, Klein, Binois, Garnett, and Hammond.
 
 
 ## Organization
