@@ -17,7 +17,8 @@ import covasim as cv
 epi_data_file  = './kc_data/20200614chop5_KingCounty_Covasim_extended.xlsx'
 safegraph_file = './kc_data/KC_weeklyinteractions_20200811_extended.xlsx'
 popfile_stem   = '../inputs/kc_rnr_seed'
-jsonfile       = '../outputs/opt_merged_sep20_sg1.json' # Calibrated runs
+#jsonfile       = '../outputs/opt_merged_sep20_sg1.json' # Calibrated runs
+jsonfile       = '../hetGPy-calibration/posterior/abc_pars.json'
 json = sc.loadjson(jsonfile)
 
 # Define default values for calculating the scenarios
@@ -227,7 +228,8 @@ def modify_sim(sim, scenpars, label=None, runinfo=None):
     ramp_down = 1 - ramp_up
 
     for ilabel in ['clip_w', 'clip_c']:
-        interv = sim.get_interventions(ilabel)
+        interv = sim.get_interventions(ilabel)[0]
+        #print(interv)
         valid_days = sc.findinds(interv.days<=last_calib_day)
 
         # Do reopening: modify clip_edges
@@ -248,14 +250,18 @@ def modify_sim(sim, scenpars, label=None, runinfo=None):
 
     # Implement testing & tracing interventions
     ctpars = {k:scenpars[k] for k in ['trace_probs', 'trace_time']}
-    tn = sim.get_interventions('tn')
+    tn = sim.get_interventions('tn')[0]
     if scenpars['which'] == 'actual':
         tn.test_delay = scenpars.test_delay
-        sim['interventions'] += [cv.contact_tracing(start_day=first_scen_day, label='contact_tracing', **ctpars)]
+        ct = cv.contact_tracing(start_day=first_scen_day, label='contact_tracing', **ctpars)
+        ct.initialize(sim)
+        sim['interventions'] += [ct]
     elif scenpars['which'] == 'low':
         offset = 7 # So it's constant
         tn.daily_tests[first_scen_day-tn.start_day-offset:] = scenpars['n_tests']
-        sim['interventions'] += [cv.contact_tracing(start_day=first_scen_day, label='contact_tracing', **ctpars)]
+        ct = cv.contact_tracing(start_day=first_scen_day, label='contact_tracing', **ctpars)
+        ct.initialize(sim)
+        sim['interventions'] += [ct]
     elif scenpars['which'] == 'high':
         cv.set_seed(sim['rand_seed']) # Just in case since we use a random number
         tn.end_day = last_calib_day # End the test_num intervention
@@ -310,7 +316,7 @@ def run_sim(index, scenpars=None, label=None, runinfo=None, do_shrink=True, from
                 print(f'run_sim(): Loading sim from cache ({filename})...')
                 sim = cv.load(filename)
                 assert isinstance(sim, cv.Sim) # Sometimes unpickling fails, but can reload locally
-                tn = sim.get_interventions('tn')
+                tn = sim.get_interventions('tn')[0]
                 tn.subtarget = test_num_subtarg
                 sim_loaded = 1
             except Exception as E:
