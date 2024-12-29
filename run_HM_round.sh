@@ -4,4 +4,4 @@
 #BSUB -R "rusage[mem=128GB]"
 #BSUB -W 5:00 
 cd hetGPy-calibration
-python3 run_HM.py
+python3 run_HM.py -r [ROUND_NUMBER] -n True
