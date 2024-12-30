@@ -20,7 +20,7 @@ It also relies on modules originally from Kerr et. al 2021, which are:
 - `fig1_calibration` and `fig5_projections` are the main folders containing the code for reproducing each figure of the manuscript.
 - `inputs` and `outputs` are folders containing the input data and the model-based outputs, respectively.
 
-Note that these analyses create large data files, which cannot be uploaded to github. These data are archived via Zenodo.
+Note that these analyses create large data files, which cannot be uploaded to github. These data are archived via Zenodo: 10.5281/zenodo.14574663
 
 ## Installation and usage
 
