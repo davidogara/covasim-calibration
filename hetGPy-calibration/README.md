@@ -8,6 +8,7 @@ This directory contains most of the files to recreate the analyses in the paper.
 
 The files and directories are described below:
 
+*   `2024-07-03-sims_combined-tn-5.csv.zip`: the initial set of simulations (50 parameters selected via LHS maximin, 25 reps each). Note you'll have to unzip.
 *   `HistoryMatchingDictionary.csv`: contains the instructions for each round of history matching
 *   `HM.py`: contains the history matching module
 *   `run_HM.py`: the module to run the history matching analysis (works with `HM.py`) and run new simulations. Requires inputs for the history matching round `-r` and whether to run and save the simulations `-n` (default True)
