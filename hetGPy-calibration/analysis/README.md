@@ -10,4 +10,6 @@ The notebooks are:
 - `calibrate-diagnoses.ipynb` and `calibrate-death.ipynb`: run ABC calibrations
 - `joint-posterior.ipynb`: analyze ABC posterior
 - `plot-posterior.ipynb`: Plot ABC posterior (Fig. 4)
-- `count-NROY-space.ipynb`: count size of history matching space (Table 1) 
+- `count-NROY-space.ipynb`: count size of history matching space (Table 1)
+
+This directory also contains `posterior-samples.csv` which are the 50 parameterizations of the covasim posterior. 
