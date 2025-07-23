@@ -1,6 +1,17 @@
 # Code for "Improving Policy-Oriented Agent-Based Modeling with History Matching: A Case Study"
 
-This repository includes the code for reproducing the results in the above-mentioned manuscript by O'Gara, Kerr, Klein, Binois, Garnett, and Hammond.
+This repository includes the code for reproducing the results in the above-mentioned manuscript by O'Gara, Kerr, Klein, Binois, Garnett, and Hammond, now published in [Epidemics](https://www.sciencedirect.com/science/article/pii/S1755436525000337):
+
+```
+@article{ogara2025improving,
+  title={Improving Policy-Oriented Agent-Based Modeling with History Matching: A Case Study},
+  author={O’Gara, David and Kerr, Cliff C and Klein, Daniel J and Binois, Micka{\"e}l and Garnett, Roman and Hammond, Ross A},
+  journal={Epidemics},
+  pages={100845},
+  year={2025},
+  publisher={Elsevier}
+}
+```
 
 
 ## Organization
